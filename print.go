@@ -5,6 +5,8 @@ import (
 	"strconv"
 )
 
+const greatestOpWeight = 99
+
 func (n nilNode) String() string {
 	return "nil"
 }
@@ -41,7 +43,81 @@ func (n unaryNode) String() string {
 }
 
 func (n binaryNode) String() string {
-	return fmt.Sprintf("(%v %v %v)", n.left, n.operator, n.right)
+	leftBinary := false
+	rightBinary := false
+	switch n.left.(type) {
+	case binaryNode:
+		leftBinary = true
+	}
+	switch n.right.(type) {
+	case binaryNode:
+		rightBinary = true
+	}
+
+	if leftBinary && !rightBinary {
+		if n.left.(binaryNode).findLowestOpWeight(greatestOpWeight) < n.opWeight() {
+			return fmt.Sprintf("(%v) %v %v", n.left, n.operator, n.right)
+		} else {
+			return fmt.Sprintf("%v %v %v", n.left, n.operator, n.right)
+		}
+	}
+	if !leftBinary && rightBinary {
+		if n.right.(binaryNode).findLowestOpWeight(greatestOpWeight) < n.opWeight() {
+			return fmt.Sprintf("%v %v (%v)", n.left, n.operator, n.right)
+		} else {
+			return fmt.Sprintf("%v %v %v", n.left, n.operator, n.right)
+		}
+	}
+
+	if leftBinary && rightBinary {
+		var l, r string
+		if n.left.(binaryNode).findLowestOpWeight(greatestOpWeight) < n.opWeight() {
+			l = fmt.Sprintf("(%v)", n.left)
+		} else {
+			l = fmt.Sprintf("%v", n.left)
+		}
+		if n.right.(binaryNode).findLowestOpWeight(greatestOpWeight) < n.opWeight() {
+			r = fmt.Sprintf("(%v)", n.right)
+		} else {
+			r = fmt.Sprintf("%v", n.right)
+		}
+		return fmt.Sprintf("%v %v %v", l, n.operator, r)
+
+	}
+
+	return fmt.Sprintf("%v %v %v", n.left, n.operator, n.right)
+}
+
+func (n binaryNode) findLowestOpWeight(min int) int {
+	if n.opWeight() < min {
+		min = n.opWeight()
+	}
+	switch n.left.(type) {
+	case binaryNode:
+		return n.left.(binaryNode).findLowestOpWeight(min)
+	}
+	switch n.right.(type) {
+	case binaryNode:
+		return n.right.(binaryNode).findLowestOpWeight(min)
+	}
+	return n.opWeight()
+}
+
+func (n binaryNode) opWeight() int {
+	op := map[string]int{
+		"+":   2,
+		"-":   2,
+		"*":   3,
+		"/":   3,
+		"and": 11,
+		"&&":  11,
+		"or":  12,
+		"||":  12,
+	}
+	if val, ok := op[n.operator]; ok {
+		return val
+	}
+	return greatestOpWeight
 }
 
 func (n matchesNode) String() string {
