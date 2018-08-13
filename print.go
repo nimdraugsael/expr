@@ -45,79 +45,44 @@ func (n unaryNode) String() string {
 func (n binaryNode) String() string {
 	leftBinary := false
 	rightBinary := false
+	var leftOp, rightOp info
 	switch n.left.(type) {
 	case binaryNode:
 		leftBinary = true
+		leftOp = n.left.(binaryNode).op()
 	}
 	switch n.right.(type) {
 	case binaryNode:
 		rightBinary = true
+		rightOp = n.right.(binaryNode).op()
 	}
 
-	if leftBinary && !rightBinary {
-		if n.left.(binaryNode).findLowestOpWeight(greatestOpWeight) < n.opWeight() {
-			return fmt.Sprintf("(%v) %v %v", n.left, n.operator, n.right)
-		} else {
-			return fmt.Sprintf("%v %v %v", n.left, n.operator, n.right)
-		}
-	}
-	if !leftBinary && rightBinary {
-		if n.right.(binaryNode).findLowestOpWeight(greatestOpWeight) < n.opWeight() {
-			return fmt.Sprintf("%v %v (%v)", n.left, n.operator, n.right)
-		} else {
-			return fmt.Sprintf("%v %v %v", n.left, n.operator, n.right)
+	left, right := fmt.Sprintf("%v", n.left), fmt.Sprintf("%v", n.right)
+
+	if leftBinary {
+		if leftOp.precedence < n.op().precedence && n.op().associativity == associativityLeft {
+			left = fmt.Sprintf("(%v)", n.left)
+		} else if leftOp.precedence >= n.op().precedence && n.op().associativity == associativityRight {
+			left = fmt.Sprintf("(%v)", n.left)
 		}
 	}
 
-	if leftBinary && rightBinary {
-		var l, r string
-		if n.left.(binaryNode).findLowestOpWeight(greatestOpWeight) < n.opWeight() {
-			l = fmt.Sprintf("(%v)", n.left)
-		} else {
-			l = fmt.Sprintf("%v", n.left)
+	if rightBinary {
+		if rightOp.precedence < n.op().precedence && n.op().associativity == associativityLeft {
+			right = fmt.Sprintf("(%v)", n.right)
+		} else if leftOp.precedence >= n.op().precedence && n.op().associativity == associativityRight {
+			right = fmt.Sprintf("(%v)", n.right)
 		}
-		if n.right.(binaryNode).findLowestOpWeight(greatestOpWeight) < n.opWeight() {
-			r = fmt.Sprintf("(%v)", n.right)
-		} else {
-			r = fmt.Sprintf("%v", n.right)
-		}
-		return fmt.Sprintf("%v %v %v", l, n.operator, r)
-
 	}
 
-	return fmt.Sprintf("%v %v %v", n.left, n.operator, n.right)
+	return fmt.Sprintf("%v %v %v", left, n.operator, right)
 }
 
-func (n binaryNode) findLowestOpWeight(min int) int {
-	if n.opWeight() < min {
-		min = n.opWeight()
+func (n binaryNode) op() info {
+	if op, ok := binaryOperators[n.operator]; ok {
+		return op
 	}
-	switch n.left.(type) {
-	case binaryNode:
-		return n.left.(binaryNode).findLowestOpWeight(min)
-	}
-	switch n.right.(type) {
-	case binaryNode:
-		return n.right.(binaryNode).findLowestOpWeight(min)
-	}
-	return n.opWeight()
-}
-
-func (n binaryNode) opWeight() int {
-	op := map[string]int{
-		"+":   2,
-		"-":   2,
-		"*":   3,
-		"/":   3,
-		"and": 11,
-		"&&":  11,
-		"or":  12,
-		"||":  12,
-	}
-	if val, ok := op[n.operator]; ok {
-		return val
-	}
-	return greatestOpWeight
+	return info{}
 }
 
 func (n matchesNode) String() string {

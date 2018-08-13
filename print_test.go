@@ -44,7 +44,7 @@ var printTests = []printTest{
 	//	"((a or b) and c)",
 	//},
 	//{
-	//	matchesNode{left: nameNode{"foo"}, right: textNode{"foobar"}},
+	//	matchesNode{associativityLeft: nameNode{"foo"}, associativityRight: textNode{"foobar"}},
 	//	"(foo matches \"foobar\")",
 	//},
 	//{
@@ -61,11 +61,11 @@ var printTests = []printTest{
 	//},
 	{
 		binaryNode{"or", binaryNode{"and", nameNode{"a"}, nameNode{"b"}}, nameNode{"c"}},
-		"(a and b) or c",
+		"a and b or c",
 	},
 	{
 		binaryNode{"and", nameNode{"a"}, binaryNode{"or", nameNode{"b"}, nameNode{"c"}}},
-		"a and b or c",
+		"a and (b or c)",
 	},
 	{
 		binaryNode{"*", nameNode{"a"}, binaryNode{"+", nameNode{"b"}, nameNode{"c"}}},
@@ -86,6 +86,14 @@ var printTests = []printTest{
 	{
 		binaryNode{"+", binaryNode{"*", nameNode{"a"}, nameNode{"b"}}, binaryNode{"+", nameNode{"c"}, nameNode{"d"}}},
 		"a * b + c + d",
+	},
+	{
+		binaryNode{"**", binaryNode{"**", nameNode{"a"}, nameNode{"b"}}, nameNode{"c"}},
+		"(a ** b) ** c",
+	},
+	{
+		unaryNode{"-", unaryNode{"+", unaryNode{"-", nameNode{"b"}}}},
+		"(-(+(-b)))",
 	},
 }
 
