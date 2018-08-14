@@ -11,8 +11,8 @@ import (
 type associativity int
 
 const (
-	associativityLeft associativity = iota + 1
-	associativityRight
+	left associativity = iota + 1
+	right
 )
 
 type info struct {
@@ -21,37 +21,37 @@ type info struct {
 }
 
 var unaryOperators = map[string]info{
-	"not": {50, associativityLeft},
-	"!":   {50, associativityLeft},
-	"-":   {500, associativityLeft},
-	"+":   {500, associativityLeft},
+	"not": {50, left},
+	"!":   {50, left},
+	"-":   {500, left},
+	"+":   {500, left},
 }
 
 var binaryOperators = map[string]info{
-	"or":      {10, associativityLeft},
-	"||":      {10, associativityLeft},
-	"and":     {15, associativityLeft},
-	"&&":      {15, associativityLeft},
-	"|":       {16, associativityLeft},
-	"^":       {17, associativityLeft},
-	"&":       {18, associativityLeft},
-	"==":      {20, associativityLeft},
-	"!=":      {20, associativityLeft},
-	"<":       {20, associativityLeft},
-	">":       {20, associativityLeft},
-	">=":      {20, associativityLeft},
-	"<=":      {20, associativityLeft},
-	"not in":  {20, associativityLeft},
-	"in":      {20, associativityLeft},
-	"matches": {20, associativityLeft},
-	"..":      {25, associativityLeft},
-	"+":       {30, associativityLeft},
-	"-":       {30, associativityLeft},
-	"~":       {40, associativityLeft},
-	"*":       {60, associativityLeft},
-	"/":       {60, associativityLeft},
-	"%":       {60, associativityLeft},
-	"**":      {200, associativityRight},
+	"or":      {10, left},
+	"||":      {10, left},
+	"and":     {15, left},
+	"&&":      {15, left},
+	"|":       {16, left},
+	"^":       {17, left},
+	"&":       {18, left},
+	"==":      {20, left},
+	"!=":      {20, left},
+	"<":       {20, left},
+	">":       {20, left},
+	">=":      {20, left},
+	"<=":      {20, left},
+	"not in":  {20, left},
+	"in":      {20, left},
+	"matches": {20, left},
+	"..":      {25, left},
+	"+":       {30, left},
+	"-":       {30, left},
+	"~":       {40, left},
+	"*":       {60, left},
+	"/":       {60, left},
+	"%":       {60, left},
+	"**":      {200, right},
 }
 
 var builtins = map[string]bool{
@@ -190,7 +190,7 @@ func (p *parser) parseExpression(precedence int) (Node, error) {
 				}
 
 				var expr Node
-				if op.associativity == associativityLeft {
+				if op.associativity == left {
 					expr, err = p.parseExpression(op.precedence + 1)
 					if err != nil {
 						return nil, err

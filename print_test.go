@@ -11,54 +11,46 @@ type printTest struct {
 }
 
 var printTests = []printTest{
-	//{
-	//	methodNode{nameNode{"foo"}, "bar", []Node{textNode{"arg1"}, numberNode{2}, boolNode{true}}},
-	//	`foo.bar("arg1", 2, true)`,
-	//},
-	//{
-	//	indexNode{propertyNode{methodNode{methodNode{nameNode{"foo"}, "bar", []Node{}}, "foo", []Node{}}, "baz"}, numberNode{33}},
-	//	"foo.bar().foo().baz[33]",
-	//},
-	//{
-	//	mapNode{[]pairNode{{identifierNode{"foo"}, numberNode{1}}, {binaryNode{"+", numberNode{1}, numberNode{2}}, numberNode{2}}}},
-	//	`{"foo": 1, (1 + 2): 2}`,
-	//},
-	//{
-	//	functionNode{"call", []Node{propertyNode{arrayNode{[]Node{numberNode{1}, unaryNode{"not", boolNode{true}}}}, "foo"}}},
-	//	"call([1, not true].foo)",
-	//},
-	//{
-	//	builtinNode{"len", []Node{identifierNode{"array"}}},
-	//	"len(array)",
-	//},
-	//{
-	//	binaryNode{"or", binaryNode{"or", nameNode{"a"}, nameNode{"b"}}, nameNode{"c"}},
-	//	"((a or b) or c)",
-	//},
-	//{
-	//	binaryNode{"or", nameNode{"a"}, binaryNode{"and", nameNode{"b"}, nameNode{"c"}}},
-	//	"(a or (b and c))",
-	//},
-	//{
-	//	binaryNode{"and", binaryNode{"or", nameNode{"a"}, nameNode{"b"}}, nameNode{"c"}},
-	//	"((a or b) and c)",
-	//},
-	//{
-	//	matchesNode{associativityLeft: nameNode{"foo"}, associativityRight: textNode{"foobar"}},
-	//	"(foo matches \"foobar\")",
-	//},
-	//{
-	//	conditionalNode{nameNode{"a"}, nameNode{"a"}, nameNode{"b"}},
-	//	"a ? a : b",
-	//},
-	//{
-	//	binaryNode{"or", binaryNode{"or", nameNode{"a"}, nameNode{"b"}}, nameNode{"c"}},
-	//	"a or b or c",
-	//},
-	//{
-	//	binaryNode{"and", binaryNode{"or", nameNode{"a"}, nameNode{"b"}}, nameNode{"c"}},
-	//	"(a or b) and c",
-	//},
+	{
+		methodNode{nameNode{"foo"}, "bar", []Node{textNode{"arg1"}, numberNode{2}, boolNode{true}}},
+		`foo.bar("arg1", 2, true)`,
+	},
+	{
+		indexNode{propertyNode{methodNode{methodNode{nameNode{"foo"}, "bar", []Node{}}, "foo", []Node{}}, "baz"}, numberNode{33}},
+		"foo.bar().foo().baz[33]",
+	},
+	{
+		mapNode{[]pairNode{{identifierNode{"foo"}, numberNode{1}}, {binaryNode{"+", numberNode{1}, numberNode{2}}, numberNode{2}}}},
+		`{"foo": 1, 1 + 2: 2}`,
+	},
+	{
+		functionNode{"call", []Node{propertyNode{arrayNode{[]Node{numberNode{1}, unaryNode{"not", boolNode{true}}}}, "foo"}}},
+		"call([1, not true].foo)",
+	},
+	{
+		builtinNode{"len", []Node{identifierNode{"array"}}},
+		"len(array)",
+	},
+	{
+		binaryNode{"and", binaryNode{"or", nameNode{"a"}, nameNode{"b"}}, nameNode{"c"}},
+		"(a or b) and c",
+	},
+	{
+		matchesNode{left: nameNode{"foo"}, right: textNode{"foobar"}},
+		"(foo matches \"foobar\")",
+	},
+	{
+		conditionalNode{nameNode{"a"}, nameNode{"a"}, nameNode{"b"}},
+		"a ? a : b",
+	},
+	{
+		binaryNode{"or", binaryNode{"or", nameNode{"a"}, nameNode{"b"}}, nameNode{"c"}},
+		"a or b or c",
+	},
+	{
+		binaryNode{"and", binaryNode{"or", nameNode{"a"}, nameNode{"b"}}, nameNode{"c"}},
+		"(a or b) and c",
+	},
 	{
 		binaryNode{"or", binaryNode{"and", nameNode{"a"}, nameNode{"b"}}, nameNode{"c"}},
 		"a and b or c",
@@ -66,10 +58,6 @@ var printTests = []printTest{
 	{
 		binaryNode{"and", nameNode{"a"}, binaryNode{"or", nameNode{"b"}, nameNode{"c"}}},
 		"a and (b or c)",
-	},
-	{
-		binaryNode{"*", nameNode{"a"}, binaryNode{"+", nameNode{"b"}, nameNode{"c"}}},
-		"a * (b + c)",
 	},
 	{
 		binaryNode{"*", nameNode{"a"}, binaryNode{"+", nameNode{"b"}, nameNode{"c"}}},
@@ -84,16 +72,20 @@ var printTests = []printTest{
 		"a + b + c + d",
 	},
 	{
-		binaryNode{"+", binaryNode{"*", nameNode{"a"}, nameNode{"b"}}, binaryNode{"+", nameNode{"c"}, nameNode{"d"}}},
-		"a * b + c + d",
-	},
-	{
 		binaryNode{"**", binaryNode{"**", nameNode{"a"}, nameNode{"b"}}, nameNode{"c"}},
 		"(a ** b) ** c",
 	},
 	{
 		unaryNode{"-", unaryNode{"+", unaryNode{"-", nameNode{"b"}}}},
 		"(-(+(-b)))",
+	},
+	{
+		binaryNode{"or", binaryNode{"and", nameNode{"a"}, nameNode{"b"}}, nameNode{"c"}},
+		"a and b or c",
+	},
+	{
+		binaryNode{"or", nameNode{"a"}, binaryNode{"and", nameNode{"b"}, nameNode{"c"}}},
+		"a or b and c",
 	},
 }
 

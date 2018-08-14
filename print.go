@@ -5,8 +5,6 @@ import (
 	"strconv"
 )
 
-const greatestOpWeight = 99
-
 func (n nilNode) String() string {
 	return "nil"
 }
@@ -43,46 +41,39 @@ func (n unaryNode) String() string {
 }
 
 func (n binaryNode) String() string {
-	leftBinary := false
-	rightBinary := false
-	var leftOp, rightOp info
+	var leftOp, rightOp *info
+	op := binaryOperators[n.operator]
+
 	switch n.left.(type) {
 	case binaryNode:
-		leftBinary = true
-		leftOp = n.left.(binaryNode).op()
+		v := binaryOperators[n.left.(binaryNode).operator]
+		leftOp = &v
 	}
 	switch n.right.(type) {
 	case binaryNode:
-		rightBinary = true
-		rightOp = n.right.(binaryNode).op()
+		v := binaryOperators[n.right.(binaryNode).operator]
+		rightOp = &v
 	}
 
-	left, right := fmt.Sprintf("%v", n.left), fmt.Sprintf("%v", n.right)
+	l, r := fmt.Sprintf("%v", n.left), fmt.Sprintf("%v", n.right)
 
-	if leftBinary {
-		if leftOp.precedence < n.op().precedence && n.op().associativity == associativityLeft {
-			left = fmt.Sprintf("(%v)", n.left)
-		} else if leftOp.precedence >= n.op().precedence && n.op().associativity == associativityRight {
-			left = fmt.Sprintf("(%v)", n.left)
+	if leftOp != nil {
+		if leftOp.precedence < op.precedence && op.associativity == left {
+			l = fmt.Sprintf("(%v)", n.left)
+		} else if leftOp.precedence >= op.precedence && op.associativity == right {
+			l = fmt.Sprintf("(%v)", n.left)
 		}
 	}
 
-	if rightBinary {
-		if rightOp.precedence < n.op().precedence && n.op().associativity == associativityLeft {
-			right = fmt.Sprintf("(%v)", n.right)
-		} else if leftOp.precedence >= n.op().precedence && n.op().associativity == associativityRight {
-			right = fmt.Sprintf("(%v)", n.right)
+	if rightOp != nil {
+		if rightOp.precedence < op.precedence && op.associativity == left {
+			r = fmt.Sprintf("(%v)", n.right)
+		} else if rightOp.precedence >= op.precedence && op.associativity == right {
+			r = fmt.Sprintf("(%v)", n.right)
 		}
 	}
 
-	return fmt.Sprintf("%v %v %v", left, n.operator, right)
-}
-
-func (n binaryNode) op() info {
-	if op, ok := binaryOperators[n.operator]; ok {
-		return op
-	}
-	return info{}
+	return fmt.Sprintf("%v %v %v", l, n.operator, r)
 }
 
 func (n matchesNode) String() string {

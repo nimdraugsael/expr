@@ -208,7 +208,7 @@ func TestParse_matches(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(m.left, nameNode{"foo"}) || !reflect.DeepEqual(m.right, textNode{"foo"}) {
-		t.Fatalf("associativityLeft or associativityRight side of matches operator invalid: %#v", m)
+		t.Fatalf("left or right side of matches operator invalid: %#v", m)
 	}
 
 	if m.r == nil {
@@ -228,7 +228,7 @@ func TestParse_matches_dynamic(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(m.left, nameNode{"foo"}) || !reflect.DeepEqual(m.right, nameNode{"regex"}) {
-		t.Fatalf("associativityLeft or associativityRight side of matches operator invalid: %#v", m)
+		t.Fatalf("left or right side of matches operator invalid: %#v", m)
 	}
 
 	if m.r != nil {
